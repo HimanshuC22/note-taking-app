@@ -6,14 +6,16 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 String? EMAIL;
 
+List<List<String>>? list;
+
 class Notes extends StatelessWidget {
   final String email;
-
   const Notes({Key? key, required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     EMAIL = email;
+    list = getNotes();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -22,8 +24,10 @@ class Notes extends StatelessWidget {
       body: NotesBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => AddNoteScreen(EMAIL: email)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddNoteScreen(EMAIL: email)));
         },
         child: Icon(
           Icons.add_outlined,
@@ -41,25 +45,15 @@ class NotesBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<List<String>> data = [];
-    final QueryBuilder<ParseObject> parseQuery = QueryBuilder<ParseObject>(
-        ParseObject("note"));
-    parseQuery.whereContains("email", EMAIL!);
-    final ParseResponse apiResponse = await parseQuery.query();
-    if (apiResponse.success && apiResponse.results != null) {
-      for (var i in apiResponse.results!) {
-        list.add([(i as ParseObject).get("title"), (i as ParseObject).get("text")]);
-      }
-    }
-    Size size = MediaQuery
-        .of(context)
-        .size;
+
+    Size size = MediaQuery.of(context).size;
     return ListView.builder(
       padding: EdgeInsets.all(kDefaultSmallPadding),
       itemCount: data.length,
       itemBuilder: (context, index) {
         return Container(
           color: Colors.black,
-          margin: EdgeInsets.symmetric(vertical: kDefaultSmallPadding/2),
+          margin: EdgeInsets.symmetric(vertical: kDefaultSmallPadding / 2),
           height: size.height / 10,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -88,16 +82,16 @@ class NotesBody extends StatelessWidget {
   }
 }
 
-getNotes() async
-{
-  List<List<String>> list = [];
-  final QueryBuilder<ParseObject> parseQuery = QueryBuilder<ParseObject>(
-      ParseObject("note"));
+getNotes() async {
+  List<List<String>>? list = [];
+  final QueryBuilder<ParseObject> parseQuery =
+      QueryBuilder<ParseObject>(ParseObject("note"));
   parseQuery.whereContains("email", EMAIL!);
   final ParseResponse apiResponse = await parseQuery.query();
   if (apiResponse.success && apiResponse.results != null) {
     for (var i in apiResponse.results!) {
-      list.add([(i as ParseObject).get("title"), (i as ParseObject).get("text")]);
+      list.add(
+          [(i as ParseObject).get("title"), (i as ParseObject).get("text")]);
     }
   }
   return list;
